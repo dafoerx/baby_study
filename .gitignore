@@ -1,0 +1,30 @@
+# Android 构建产物
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.externalNativeBuild/
+
+# Web 资源（打包时动态拷贝）
+android/app/src/main/assets/www/
+
+# Gradle Wrapper JAR (需要时从 Gradle 官方下载)
+# android/gradle/wrapper/gradle-wrapper.jar
+
+# APK 输出
+output/
+
+# 自动下载的 Android SDK、Gradle、JDK（一键打包时自动安装）
+.android-sdk/
+.gradle-dist/
+.jdk11/
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# 签名文件
+*.keystore
+*.jks

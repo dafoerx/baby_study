@@ -2,6 +2,33 @@
  * 主应用逻辑
  */
 (function () {
+  // ==================== 设置持久化 ====================
+  const SETTINGS_KEY = 'anbao-flashcard-settings';
+
+  const DEFAULT_SETTINGS = {
+    speed: 0.5,
+    intervalMinutes: 15,
+    autoPlay: true,
+    cardScale: 1.2,  // 默认"较大"
+  };
+
+  function loadSettings() {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...DEFAULT_SETTINGS, ...parsed };
+      }
+    } catch (e) { /* ignore */ }
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  function saveSettings() {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+    } catch (e) { /* ignore */ }
+  }
+
   // ==================== 状态管理 ====================
   const state = {
     currentPage: 'catalog',
@@ -9,12 +36,7 @@
     currentDay: null,
     currentSession: null,
     player: new FlashPlayer(),
-    settings: {
-      speed: 0.5,
-      intervalMinutes: 15,
-      autoPlay: true,
-      cardScale: 1.0,
-    }
+    settings: loadSettings()
   };
 
   // ==================== 页面路由 ====================
@@ -151,18 +173,16 @@
     state.currentSession = session;
     const player = state.player;
 
-    // 配置播放器
+    // 配置播放器（使用全局设置）
     player.setSpeed(state.settings.speed);
     player.intervalMinutes = state.settings.intervalMinutes;
     player.autoPlay = state.settings.autoPlay;
     player.loadSession(session, session.groups);
 
-    // 更新UI
+    // 更新UI — 同步全局设置到闪卡页控件
     document.getElementById('flash-session-info').textContent = `第${session.session}次`;
     document.getElementById('flash-group-info').textContent = `第1/${session.groups.length}组`;
-    document.getElementById('flash-speed').value = state.settings.speed;
-    document.getElementById('flash-card-scale').value = state.settings.cardScale;
-    document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+    syncSettingsToUI();
 
     // 重置控制按钮
     resetFlashControls();
@@ -175,6 +195,38 @@
     player.onStateChange = handleFlashState;
 
     showPage('flash');
+  }
+
+  /**
+   * 把 state.settings 同步到所有 UI 控件（闪卡页 + 设置弹窗）
+   */
+  function syncSettingsToUI() {
+    // 闪卡页速度
+    const flashSpeed = document.getElementById('flash-speed');
+    if (flashSpeed) flashSpeed.value = state.settings.speed;
+
+    // 闪卡页大小
+    const flashScale = document.getElementById('flash-card-scale');
+    if (flashScale) flashScale.value = state.settings.cardScale;
+
+    // CSS变量
+    document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+
+    // 设置弹窗速度
+    const settingSpeed = document.getElementById('setting-speed');
+    if (settingSpeed) settingSpeed.value = state.settings.speed;
+
+    // 设置弹窗间隔
+    const settingInterval = document.getElementById('setting-interval');
+    if (settingInterval) settingInterval.value = state.settings.intervalMinutes;
+
+    // 设置弹窗自动播放
+    const settingAutoplay = document.getElementById('setting-autoplay');
+    if (settingAutoplay) settingAutoplay.checked = state.settings.autoPlay;
+
+    // 设置弹窗大小
+    const settingScale = document.getElementById('setting-card-scale');
+    if (settingScale) settingScale.value = state.settings.cardScale;
   }
 
   function handleFlashState(stateType, data) {
@@ -292,29 +344,52 @@
       }
     });
 
-    // 速度调节
-    document.getElementById('flash-speed').addEventListener('change', (e) => {
+    // 速度调节（闪卡页）— 即时生效 + 全局保存
+    const onFlashSpeedChange = (e) => {
       state.settings.speed = parseFloat(e.target.value);
       state.player.setSpeed(state.settings.speed);
-    });
+      saveSettings();
+      syncSettingsToUI();
+    };
+    document.getElementById('flash-speed').addEventListener('change', onFlashSpeedChange);
+    document.getElementById('flash-speed').addEventListener('input', onFlashSpeedChange);
 
-    // 卡片大小调节
-    document.getElementById('flash-card-scale').addEventListener('change', (e) => {
+    // 卡片大小调节（闪卡页）— 即时生效 + 全局保存
+    const onFlashScaleChange = (e) => {
       state.settings.cardScale = parseFloat(e.target.value);
       document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
-    });
+      saveSettings();
+      syncSettingsToUI();
+    };
+    document.getElementById('flash-card-scale').addEventListener('change', onFlashScaleChange);
+    document.getElementById('flash-card-scale').addEventListener('input', onFlashScaleChange);
 
     // 设置弹窗
     document.getElementById('btn-settings').addEventListener('click', () => {
+      // 打开弹窗前同步当前设置到弹窗控件
+      syncSettingsToUI();
       document.getElementById('settings-modal').classList.remove('hidden');
     });
 
     document.getElementById('btn-close-settings').addEventListener('click', () => {
       document.getElementById('settings-modal').classList.add('hidden');
-      // 保存设置
+      // 保存设置弹窗的所有值
       state.settings.speed = parseFloat(document.getElementById('setting-speed').value);
       state.settings.intervalMinutes = parseInt(document.getElementById('setting-interval').value);
       state.settings.autoPlay = document.getElementById('setting-autoplay').checked;
+      // 如果有大小设置也读取
+      const settingScale = document.getElementById('setting-card-scale');
+      if (settingScale) {
+        state.settings.cardScale = parseFloat(settingScale.value);
+      }
+      // 应用到播放器
+      state.player.setSpeed(state.settings.speed);
+      state.player.intervalMinutes = state.settings.intervalMinutes;
+      state.player.autoPlay = state.settings.autoPlay;
+      document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+      // 全局同步 + 持久化
+      saveSettings();
+      syncSettingsToUI();
     });
 
     // 点击弹窗外部关闭
@@ -325,10 +400,42 @@
     });
   }
 
+  // ==================== TV 模式检测 ====================
+  function isTVMode() {
+    return (window.innerWidth >= 1200 && window.innerHeight >= 700 && window.innerWidth > window.innerHeight)
+      || /TV|SmartTV|BRAVIA|SMART-TV|HbbTV|HUAWEI|HarmonyOS/i.test(navigator.userAgent);
+  }
+
+  function applyTVDefaults() {
+    if (!isTVMode()) return;
+
+    // 只在用户从未手动保存过设置时才应用TV默认值
+    const hasSavedSettings = !!localStorage.getItem(SETTINGS_KEY);
+    if (hasSavedSettings) return;
+
+    // TV模式默认使用更大的卡片
+    if (window.innerWidth >= 2500) {
+      state.settings.cardScale = 2.8; // 4K TV
+    } else {
+      state.settings.cardScale = 2.2; // 1080p TV
+    }
+
+    // TV模式闪卡速度稍慢一些（远距离观看需要更多时间）
+    state.settings.speed = 0.8;
+
+    // 持久化TV默认设置
+    saveSettings();
+    syncSettingsToUI();
+  }
+
   // ==================== 初始化 ====================
   function init() {
     renderCatalog();
     bindEvents();
+    // 应用持久化的设置到UI
+    syncSettingsToUI();
+    // TV模式自动调整（仅首次）
+    applyTVDefaults();
     showPage('catalog');
   }
 

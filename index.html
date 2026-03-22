@@ -2,11 +2,17 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数组点卡闪卡 - 宝宝数学启蒙</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#E53935">
+  <title>数组点卡闪卡 - 安宝数学启蒙</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/dot-card.css">
   <link rel="stylesheet" href="css/flash-player.css">
+  <link rel="stylesheet" href="css/tv.css">
 </head>
 <body>
   <div id="app">
@@ -75,10 +81,12 @@
             <select id="flash-card-scale">
               <option value="0.6">小</option>
               <option value="0.8">较小</option>
-              <option value="1.0" selected>中</option>
-              <option value="1.2">较大</option>
+              <option value="1.0">中</option>
+              <option value="1.2" selected>较大</option>
               <option value="1.5">大</option>
               <option value="1.8">很大</option>
+              <option value="2.2">超大(TV)</option>
+              <option value="2.8">巨大(TV)</option>
             </select>
           </label>
         </div>
@@ -116,7 +124,7 @@
         </div>
         <div class="modal-body">
           <div class="setting-item">
-            <label>默认闪卡速度</label>
+            <label>闪卡速度</label>
             <select id="setting-speed">
               <option value="0.3">0.3秒</option>
               <option value="0.5" selected>0.5秒</option>
@@ -124,6 +132,19 @@
               <option value="1.0">1.0秒</option>
               <option value="1.5">1.5秒</option>
               <option value="2.0">2.0秒</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>卡片大小</label>
+            <select id="setting-card-scale">
+              <option value="0.6">小</option>
+              <option value="0.8">较小</option>
+              <option value="1.0">中</option>
+              <option value="1.2" selected>较大</option>
+              <option value="1.5">大</option>
+              <option value="1.8">很大</option>
+              <option value="2.2">超大(TV)</option>
+              <option value="2.8">巨大(TV)</option>
             </select>
           </div>
           <div class="setting-item">
@@ -144,5 +165,12 @@
   <script src="js/dot-card.js"></script>
   <script src="js/flash-player.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/tv-remote.js"></script>
+  <script>
+    // 注册 Service Worker (PWA 离线支持)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function() {});
+    }
+  </script>
 </body>
 </html>

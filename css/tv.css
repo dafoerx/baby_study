@@ -1,0 +1,599 @@
+/* ========================================================
+   华为智慧屏 V75 适配样式
+   - 75寸 4K (3840×2160) 大屏
+   - 遥控器 D-pad 焦点导航
+   - 观看距离 3.5m+ 大字体
+   ======================================================== */
+
+/* ========== TV 模式检测 ========== */
+/* 横屏 + 大尺寸屏幕 = TV模式 */
+@media (min-width: 1200px) and (min-height: 700px) and (orientation: landscape) {
+
+  /* ---- 根变量覆盖 ---- */
+  :root {
+    --tv-scale: 1.5;
+    --radius: 20px;
+    --radius-sm: 14px;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    --shadow-hover: 0 8px 40px rgba(229, 57, 53, 0.25);
+  }
+
+  body {
+    font-size: 24px;
+    cursor: none; /* TV无鼠标 */
+    overflow: hidden; /* TV不需要滚动条，用焦点导航 */
+    height: 100vh;
+  }
+
+  /* ---- 全局容器 ---- */
+  #app {
+    max-width: 100%;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ---- 导航栏 TV 放大 ---- */
+  .main-nav {
+    padding: 20px 48px;
+    flex-shrink: 0;
+  }
+
+  .nav-icon {
+    font-size: 40px;
+  }
+
+  .nav-brand h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+  }
+
+  .btn-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+
+  /* ---- 页面基础 ---- */
+  .page {
+    padding: 36px 60px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* TV隐藏滚动条 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .page::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page-header {
+    margin-bottom: 32px;
+  }
+
+  .page-header h2 {
+    font-size: 36px;
+  }
+
+  .subtitle {
+    font-size: 20px;
+  }
+
+  .btn-back {
+    padding: 14px 28px;
+    font-size: 20px;
+    border-radius: var(--radius-sm);
+    border-width: 3px;
+  }
+
+  /* ---- 目录页 TV ---- */
+  .catalog-header {
+    padding: 24px 0 20px;
+  }
+
+  .catalog-header h2 {
+    font-size: 42px;
+  }
+
+  .chapter-list {
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .chapter-card {
+    padding: 28px 36px;
+    border-radius: var(--radius);
+    border-width: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .chapter-icon {
+    font-size: 48px;
+    width: 80px;
+    height: 80px;
+    border-radius: 18px;
+  }
+
+  .chapter-info {
+    padding: 0 24px;
+  }
+
+  .chapter-info h3 {
+    font-size: 26px;
+  }
+
+  .chapter-subtitle {
+    font-size: 20px;
+  }
+
+  .chapter-desc {
+    font-size: 16px;
+  }
+
+  .chapter-arrow {
+    font-size: 36px;
+  }
+
+  /* ---- 天数列表 TV 网格 ---- */
+  .day-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+  }
+
+  .day-card {
+    padding: 28px;
+    border-width: 3px;
+  }
+
+  .day-header h3 {
+    font-size: 24px;
+  }
+
+  .day-badge {
+    padding: 6px 18px;
+    font-size: 16px;
+  }
+
+  .day-desc {
+    font-size: 18px;
+  }
+
+  .day-stats {
+    font-size: 16px;
+    gap: 24px;
+  }
+
+  /* ---- Session 列表 TV ---- */
+  .session-list {
+    gap: 28px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .session-card {
+    padding: 28px;
+    border-width: 3px;
+  }
+
+  .session-header h3 {
+    font-size: 26px;
+  }
+
+  .btn-start-session {
+    padding: 16px 40px;
+    font-size: 20px;
+    border-radius: var(--radius-sm);
+  }
+
+  .group-label {
+    font-size: 16px;
+  }
+
+  .group-preview {
+    padding: 14px 18px;
+  }
+
+  .eq-preview {
+    font-size: 18px;
+    padding: 4px 12px;
+  }
+
+  /* ---- 闪卡播放页 TV ---- */
+  .flash-header {
+    margin-bottom: 16px;
+    padding: 0 12px;
+    position: relative;
+    z-index: 20;
+  }
+
+  .flash-info span {
+    font-size: 20px;
+    padding: 10px 22px;
+  }
+
+  .flash-controls-top label {
+    font-size: 20px;
+  }
+
+  .flash-controls-top select {
+    font-size: 18px;
+    padding: 10px 18px;
+    -webkit-appearance: menulist;
+    appearance: menulist;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .flash-stage {
+    min-height: 500px;
+    flex: 1;
+    border-radius: 24px;
+    padding: 40px 30px 70px;
+    margin-bottom: 16px;
+  }
+
+  .equation-display {
+    gap: 24px;
+  }
+
+  /* TV 模式下点卡默认更大 */
+  .equation-row {
+    gap: calc(20px * var(--card-scale));
+    padding: 24px;
+  }
+
+  /* 底部控制区 */
+  .flash-controls-bottom {
+    padding: 12px 0;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .btn-play {
+    padding: 22px 64px;
+    font-size: 28px;
+    letter-spacing: 4px;
+  }
+
+  .btn-control {
+    padding: 16px 44px;
+    font-size: 22px;
+    border-width: 3px;
+  }
+
+  .flash-timer {
+    font-size: 22px;
+    padding: 16px 32px;
+    border-width: 3px;
+  }
+
+  #timer-countdown {
+    font-size: 30px;
+  }
+
+  .flash-complete span {
+    font-size: 36px;
+  }
+
+  /* ---- 设置弹窗 TV ---- */
+  .modal-content {
+    max-width: 560px;
+    border-radius: var(--radius);
+  }
+
+  .modal-header {
+    padding: 20px 28px;
+  }
+
+  .modal-header h3 {
+    font-size: 24px;
+  }
+
+  .btn-close {
+    width: 44px;
+    height: 44px;
+    font-size: 26px;
+  }
+
+  .modal-body {
+    padding: 24px 28px;
+  }
+
+  .setting-item {
+    padding: 16px 0;
+  }
+
+  .setting-item label {
+    font-size: 20px;
+  }
+
+  .setting-item select,
+  .setting-item input[type="number"] {
+    font-size: 20px;
+    padding: 10px 16px;
+    width: 130px;
+  }
+
+  .setting-item input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+  }
+
+  .empty-msg {
+    font-size: 24px;
+    padding: 80px 0;
+  }
+}
+
+/* ========== 4K 超高分辨率进一步放大 ========== */
+@media (min-width: 2500px) and (orientation: landscape) {
+  :root {
+    --tv-scale: 2;
+  }
+
+  body {
+    font-size: 32px;
+  }
+
+  .main-nav {
+    padding: 28px 64px;
+  }
+
+  .nav-brand h1 {
+    font-size: 42px;
+  }
+
+  .nav-icon {
+    font-size: 52px;
+  }
+
+  .page {
+    padding: 48px 80px;
+  }
+
+  .catalog-header h2 {
+    font-size: 56px;
+  }
+
+  .page-header h2 {
+    font-size: 48px;
+  }
+
+  .subtitle {
+    font-size: 26px;
+  }
+
+  .btn-back {
+    font-size: 26px;
+    padding: 18px 36px;
+  }
+
+  .chapter-card {
+    padding: 36px 48px;
+  }
+
+  .chapter-icon {
+    font-size: 60px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .chapter-info h3 {
+    font-size: 34px;
+  }
+
+  .chapter-subtitle {
+    font-size: 26px;
+  }
+
+  .chapter-desc {
+    font-size: 20px;
+  }
+
+  .chapter-arrow {
+    font-size: 44px;
+  }
+
+  .day-list {
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+    gap: 32px;
+  }
+
+  .day-card {
+    padding: 36px;
+  }
+
+  .day-header h3 {
+    font-size: 32px;
+  }
+
+  .day-badge {
+    font-size: 20px;
+    padding: 8px 22px;
+  }
+
+  .day-desc {
+    font-size: 24px;
+  }
+
+  .day-stats {
+    font-size: 20px;
+  }
+
+  .session-header h3 {
+    font-size: 32px;
+  }
+
+  .btn-start-session {
+    font-size: 26px;
+    padding: 20px 52px;
+  }
+
+  .eq-preview {
+    font-size: 24px;
+  }
+
+  .group-label {
+    font-size: 20px;
+  }
+
+  /* 闪卡播放 4K */
+  .flash-stage {
+    min-height: 700px;
+  }
+
+  .flash-info span {
+    font-size: 26px;
+  }
+
+  .flash-controls-top label {
+    font-size: 26px;
+  }
+
+  .flash-controls-top select {
+    font-size: 24px;
+  }
+
+  .btn-play {
+    font-size: 36px;
+    padding: 28px 80px;
+  }
+
+  .btn-control {
+    font-size: 28px;
+    padding: 20px 56px;
+  }
+
+  .flash-timer {
+    font-size: 28px;
+  }
+
+  #timer-countdown {
+    font-size: 38px;
+  }
+
+  .flash-complete span {
+    font-size: 48px;
+  }
+
+  /* 设置弹窗 4K */
+  .modal-content {
+    max-width: 720px;
+  }
+
+  .modal-header h3 {
+    font-size: 32px;
+  }
+
+  .setting-item label {
+    font-size: 26px;
+  }
+
+  .setting-item select,
+  .setting-item input[type="number"] {
+    font-size: 26px;
+    width: 160px;
+  }
+}
+
+
+/* ========== 遥控器焦点导航样式 ========== */
+
+/* 所有可聚焦元素 */
+.tv-focusable {
+  outline: none;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+/* 焦点高亮效果 */
+.tv-focusable:focus,
+.tv-focusable.tv-focused {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.6), 0 4px 24px rgba(229, 57, 53, 0.3) !important;
+  transform: scale(1.03);
+  z-index: 10;
+}
+
+/* 按钮焦点样式 */
+button.tv-focusable:focus,
+button.tv-focusable.tv-focused {
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.7), 0 6px 28px rgba(229, 57, 53, 0.4) !important;
+  transform: scale(1.05);
+}
+
+/* 卡片焦点样式 */
+.chapter-card.tv-focusable:focus,
+.chapter-card.tv-focusable.tv-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.5), var(--shadow-hover) !important;
+  transform: translateX(8px) scale(1.02);
+}
+
+.day-card.tv-focusable:focus,
+.day-card.tv-focusable.tv-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.5), var(--shadow-hover) !important;
+  transform: translateY(-4px) scale(1.02);
+}
+
+.session-card.tv-focusable:focus,
+.session-card.tv-focusable.tv-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.5), 0 4px 20px rgba(229, 57, 53, 0.2) !important;
+}
+
+/* 焦点指示标签 */
+.tv-focus-hint {
+  display: none;
+}
+
+@media (min-width: 1200px) and (min-height: 700px) and (orientation: landscape) {
+  .tv-focus-hint {
+    display: block;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+    padding: 12px 32px;
+    border-radius: 40px;
+    font-size: 18px;
+    z-index: 999;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    opacity: 0.8;
+    transition: opacity 0.3s;
+  }
+
+  .tv-focus-hint.hidden {
+    opacity: 0;
+  }
+}
+
+/* ========== 安全区域（TV过扫描）========== */
+@media (min-width: 1200px) and (min-height: 700px) and (orientation: landscape) {
+  /* TV有5%过扫描(overscan)，内容需要内缩 */
+  #app {
+    padding: 0;
+  }
+
+  .page {
+    padding-left: calc(60px + env(safe-area-inset-left, 0px));
+    padding-right: calc(60px + env(safe-area-inset-right, 0px));
+  }
+
+  .main-nav {
+    padding-left: calc(48px + env(safe-area-inset-left, 0px));
+    padding-right: calc(48px + env(safe-area-inset-right, 0px));
+  }
+}

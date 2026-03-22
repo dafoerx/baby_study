@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BabyStudy" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#E53935</item>
+        <item name="android:colorPrimaryDark">#C62828</item>
+        <item name="android:colorAccent">#FF7043</item>
+        <item name="android:statusBarColor">#E53935</item>
+        <item name="android:windowBackground">#FFF8F0</item>
+    </style>
+</resources>
