@@ -1,0 +1,229 @@
+/* ========== 闪卡播放页样式 ========== */
+
+/* 播放页头部 */
+.flash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.flash-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.flash-info span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  background: #FFF3F0;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #FFE0DE;
+}
+
+.flash-controls-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flash-controls-top label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-light);
+}
+
+.flash-controls-top select {
+  padding: 6px 12px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+}
+
+/* 舞台区域 */
+.flash-stage {
+  min-height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #FFFFFF, #FFF8F5);
+  border-radius: 20px;
+  border: 2px solid #FFE8E3;
+  margin-bottom: 24px;
+  padding: 30px 20px 60px;
+  box-shadow: inset 0 2px 12px rgba(229, 57, 53, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.flash-stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), #FFB74D, var(--primary));
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.equation-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* 底部控制区 */
+.flash-controls-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 0;
+}
+
+/* 播放按钮 */
+.btn-play {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: none;
+  padding: 16px 48px;
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4);
+  letter-spacing: 2px;
+}
+
+.btn-play:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 28px rgba(229, 57, 53, 0.5);
+}
+
+.btn-play:active {
+  transform: scale(0.98);
+}
+
+/* 控制按钮 */
+.btn-control {
+  background: var(--bg-card);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-control:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* 倒计时 */
+.flash-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFF3E0;
+  padding: 12px 24px;
+  border-radius: 50px;
+  border: 2px solid #FFE0B2;
+  font-size: 16px;
+  font-weight: 600;
+  color: #E65100;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+#timer-countdown {
+  font-family: 'SF Mono', 'Menlo', monospace;
+  font-size: 22px;
+  font-weight: 800;
+  color: #BF360C;
+}
+
+/* 完成提示 */
+.flash-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  animation: bounceIn 0.5s ease;
+}
+
+.flash-complete span {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FF6F00, #FF9100);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 隐藏类 */
+.hidden {
+  display: none !important;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .flash-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .flash-stage {
+    min-height: 250px;
+    padding: 20px 10px 50px;
+  }
+
+  .btn-play {
+    padding: 14px 36px;
+    font-size: 18px;
+    width: 100%;
+  }
+
+  .btn-control {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+
+  .flash-timer {
+    flex-direction: column;
+    text-align: center;
+  }
+}

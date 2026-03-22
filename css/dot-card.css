@@ -1,0 +1,114 @@
+/* ========== 点卡样式 ========== */
+
+/* CSS变量控制点卡大小，默认比例 1.0 */
+:root {
+  --card-scale: 1;
+}
+
+/* 点卡容器（外层包含数字标签空间） */
+.dot-card {
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: calc(30px * var(--card-scale));
+}
+
+/* 点卡卡片主体 */
+.dot-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 3px solid #F0E0D6;
+}
+
+/* 尺寸 — 通过 --card-scale 变量统一缩放 */
+.dot-card-small {
+  width: calc(100px * var(--card-scale));
+  height: calc(100px * var(--card-scale));
+}
+
+.dot-card-medium {
+  width: calc(150px * var(--card-scale));
+  height: calc(150px * var(--card-scale));
+}
+
+.dot-card-large {
+  width: calc(200px * var(--card-scale));
+  height: calc(200px * var(--card-scale));
+}
+
+/* 点阵区域 */
+.dot-card-dots {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding: 8%;
+}
+
+/* 单个点 */
+.dot {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 数字标签 */
+.dot-card-label {
+  position: absolute;
+  bottom: calc(-30px * var(--card-scale));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(24px * var(--card-scale));
+  font-weight: 800;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  line-height: 1;
+}
+
+/* 运算符卡片 */
+.operator-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(48px * var(--card-scale));
+  font-weight: 800;
+  color: #E53935;
+  width: calc(60px * var(--card-scale));
+  height: calc(60px * var(--card-scale));
+  flex-shrink: 0;
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+}
+
+/* 等式行 */
+.equation-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(14px * var(--card-scale));
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+/* SVG 点卡 */
+.dot-card-svg {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dot-card-svg-small {
+  width: calc(100px * var(--card-scale));
+  height: calc(100px * var(--card-scale));
+}
+
+.dot-card-svg-medium {
+  width: calc(150px * var(--card-scale));
+  height: calc(150px * var(--card-scale));
+}
+
+.dot-card-svg-large {
+  width: calc(200px * var(--card-scale));
+  height: calc(200px * var(--card-scale));
+}

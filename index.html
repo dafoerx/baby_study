@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数组点卡闪卡 - 宝宝数学启蒙</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dot-card.css">
+  <link rel="stylesheet" href="css/flash-player.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 主导航 -->
+    <nav id="main-nav" class="main-nav">
+      <div class="nav-brand">
+        <span class="nav-icon">🧒</span>
+        <h1>数组点卡闪卡</h1>
+      </div>
+      <div class="nav-actions">
+        <button id="btn-settings" class="btn-icon" title="设置">⚙️</button>
+      </div>
+    </nav>
+
+    <!-- 课程目录页 -->
+    <section id="page-catalog" class="page active">
+      <div class="catalog-header">
+        <h2>课程目录</h2>
+        <p class="subtitle">按章节循序渐进，每日坚持练习</p>
+      </div>
+      <div id="chapter-list" class="chapter-list"></div>
+    </section>
+
+    <!-- 章节天数选择页 -->
+    <section id="page-chapter" class="page">
+      <div class="page-header">
+        <button id="btn-back-catalog" class="btn-back">← 返回目录</button>
+        <h2 id="chapter-title"></h2>
+        <p id="chapter-desc" class="subtitle"></p>
+      </div>
+      <div id="day-list" class="day-list"></div>
+    </section>
+
+    <!-- 每日课程详情页 -->
+    <section id="page-day" class="page">
+      <div class="page-header">
+        <button id="btn-back-chapter" class="btn-back">← 返回章节</button>
+        <h2 id="day-title"></h2>
+        <p id="day-desc" class="subtitle"></p>
+      </div>
+      <div id="session-list" class="session-list"></div>
+    </section>
+
+    <!-- 闪卡播放页 -->
+    <section id="page-flash" class="page">
+      <div class="flash-header">
+        <button id="btn-back-day" class="btn-back">← 返回</button>
+        <div class="flash-info">
+          <span id="flash-session-info"></span>
+          <span id="flash-group-info"></span>
+        </div>
+        <div class="flash-controls-top">
+          <label>
+            速度:
+            <select id="flash-speed">
+              <option value="0.3">0.3秒</option>
+              <option value="0.5" selected>0.5秒</option>
+              <option value="0.8">0.8秒</option>
+              <option value="1.0">1.0秒</option>
+              <option value="1.5">1.5秒</option>
+              <option value="2.0">2.0秒</option>
+            </select>
+          </label>
+          <label>
+            大小:
+            <select id="flash-card-scale">
+              <option value="0.6">小</option>
+              <option value="0.8">较小</option>
+              <option value="1.0" selected>中</option>
+              <option value="1.2">较大</option>
+              <option value="1.5">大</option>
+              <option value="1.8">很大</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <!-- 等式展示区 -->
+      <div id="flash-stage" class="flash-stage">
+        <div id="equation-display" class="equation-display"></div>
+      </div>
+
+      <!-- 播放控制 -->
+      <div class="flash-controls-bottom">
+        <button id="btn-flash-play" class="btn-play">▶ 开始闪卡</button>
+        <button id="btn-flash-pause" class="btn-control hidden">⏸ 暂停</button>
+        <button id="btn-flash-resume" class="btn-control hidden">▶ 继续</button>
+        <button id="btn-flash-next-group" class="btn-control hidden">下一组 →</button>
+        <button id="btn-flash-next-session" class="btn-control hidden">下一次 →</button>
+        <div id="flash-timer" class="flash-timer hidden">
+          <span>下一组倒计时: </span>
+          <span id="timer-countdown"></span>
+        </div>
+        <div id="flash-complete" class="flash-complete hidden">
+          <span>🎉 本次练习完成！</span>
+          <button id="btn-flash-restart" class="btn-control">重新开始</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置弹窗 -->
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>设置</h3>
+          <button id="btn-close-settings" class="btn-close">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-item">
+            <label>默认闪卡速度</label>
+            <select id="setting-speed">
+              <option value="0.3">0.3秒</option>
+              <option value="0.5" selected>0.5秒</option>
+              <option value="0.8">0.8秒</option>
+              <option value="1.0">1.0秒</option>
+              <option value="1.5">1.5秒</option>
+              <option value="2.0">2.0秒</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>组间间隔（分钟）</label>
+            <input type="number" id="setting-interval" value="15" min="1" max="60">
+          </div>
+          <div class="setting-item">
+            <label>自动播放下一组</label>
+            <input type="checkbox" id="setting-autoplay" checked>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data/chapters.js"></script>
+  <script src="js/data/chapter7.js"></script>
+  <script src="js/dot-card.js"></script>
+  <script src="js/flash-player.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
