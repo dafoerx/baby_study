@@ -103,21 +103,19 @@ class DotCard {
   }
 
   /**
-   * 获取点的大小（根据数量自动调整，跟随--card-scale缩放）
+   * 获取点的大小（基于卡片实际尺寸的百分比，完全自适应）
+   * 返回的是百分比值，渲染时转为卡片尺寸的百分比
    */
-  getDotSize() {
+  getDotSizePercent() {
     const num = this.number;
-    let base;
-    if (num <= 5) base = 22;
-    else if (num <= 10) base = 18;
-    else if (num <= 20) base = 14;
-    else if (num <= 35) base = 11;
-    else if (num <= 50) base = 9;
-    else if (num <= 75) base = 7;
-    else base = 6;
-
-    const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--card-scale')) || 1;
-    return Math.round(base * scale);
+    // 点的直径占卡片宽度的百分比
+    if (num <= 5) return 14;
+    else if (num <= 10) return 11;
+    else if (num <= 20) return 8.5;
+    else if (num <= 35) return 6.5;
+    else if (num <= 50) return 5;
+    else if (num <= 75) return 4;
+    else return 3.2;
   }
 
   /**
@@ -139,7 +137,7 @@ class DotCard {
     dotsArea.className = 'dot-card-dots';
 
     const positions = this.calculateDotPositions();
-    const dotSize = this.getDotSize();
+    const dotSizePct = this.getDotSizePercent();
     const colorValue = this.getColorValue();
 
     positions.forEach((pos, index) => {
@@ -148,8 +146,8 @@ class DotCard {
       dot.style.cssText = `
         left: ${pos.x}%;
         top: ${pos.y}%;
-        width: ${dotSize}px;
-        height: ${dotSize}px;
+        width: ${dotSizePct}%;
+        height: ${dotSizePct}%;
         background-color: ${colorValue};
       `;
 
@@ -185,14 +183,14 @@ class DotCard {
     svg.appendChild(bg);
 
     const positions = this.calculateDotPositions();
-    const dotSize = this.getDotSize();
+    const dotSizePct = this.getDotSizePercent();
     const colorValue = this.getColorValue();
 
     positions.forEach(pos => {
       const circle = document.createElementNS(svgNS, 'circle');
       circle.setAttribute('cx', (pos.x / 100) * 190 + 5);
       circle.setAttribute('cy', (pos.y / 100) * 190 + 5);
-      circle.setAttribute('r', dotSize * 0.5);
+      circle.setAttribute('r', (dotSizePct / 100) * 200 * 0.5);
       circle.setAttribute('fill', colorValue);
       svg.appendChild(circle);
     });

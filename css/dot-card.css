@@ -1,15 +1,32 @@
 /* ========== 点卡样式 ========== */
 
-/* CSS变量控制点卡大小，默认比例 1.0 */
+/*
+ * 自适应尺寸方案：
+ * - 一个等式有 5 个 parts（3点卡 + 2运算符）
+ * - 点卡宽度基于视口计算，确保一行放下不换行
+ * - 白边（padding）最小占屏幕宽度的 1/20（5vw）
+ * - --card-scale 仍作为用户可调的缩放因子
+ *
+ * 计算：可用宽度 = 100vw - 2*5vw(白边) = 90vw
+ *       3个点卡 + 2个运算符(运算符宽=点卡*0.35) + 4个间距(间距=点卡*0.08)
+ *       ≈ 3*card + 2*0.35*card + 4*0.08*card = 4.02*card
+ *       card ≈ 90vw / 4.02 ≈ 22vw（取基准值）
+ *       同时取 min(22vw, 40vh) 防止纵向溢出
+ */
+
 :root {
   --card-scale: 1;
+  /* 基础点卡尺寸：自适应视口 */
+  --card-base-size: min(22vw, 38vh);
+  /* 实际点卡尺寸：基础 × 用户缩放 */
+  --card-size: calc(var(--card-base-size) * var(--card-scale));
 }
 
 /* 点卡容器（外层包含数字标签空间） */
 .dot-card {
   position: relative;
   flex-shrink: 0;
-  margin-bottom: calc(30px * var(--card-scale));
+  margin-bottom: calc(var(--card-size) * 0.15);
 }
 
 /* 点卡卡片主体 */
@@ -18,26 +35,18 @@
   height: 100%;
   position: relative;
   background: #FFFFFF;
-  border-radius: 14px;
+  border-radius: calc(var(--card-size) * 0.07);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  border: 3px solid #F0E0D6;
+  border: calc(var(--card-size) * 0.015) solid #F0E0D6;
 }
 
-/* 尺寸 — 通过 --card-scale 变量统一缩放 */
-.dot-card-small {
-  width: calc(100px * var(--card-scale));
-  height: calc(100px * var(--card-scale));
-}
-
-.dot-card-medium {
-  width: calc(150px * var(--card-scale));
-  height: calc(150px * var(--card-scale));
-}
-
+/* 尺寸统一由 --card-size 控制 */
+.dot-card-small,
+.dot-card-medium,
 .dot-card-large {
-  width: calc(200px * var(--card-scale));
-  height: calc(200px * var(--card-scale));
+  width: var(--card-size);
+  height: var(--card-size);
 }
 
 /* 点阵区域 */
@@ -48,7 +57,7 @@
   padding: 8%;
 }
 
-/* 单个点 */
+/* 单个点 — 大小由JS动态设置 */
 .dot {
   position: absolute;
   border-radius: 50%;
@@ -58,11 +67,11 @@
 /* 数字标签 */
 .dot-card-label {
   position: absolute;
-  bottom: calc(-30px * var(--card-scale));
+  bottom: calc(var(--card-size) * -0.15);
   left: 0;
   right: 0;
   text-align: center;
-  font-size: calc(24px * var(--card-scale));
+  font-size: calc(var(--card-size) * 0.12);
   font-weight: 800;
   font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
   line-height: 1;
@@ -73,42 +82,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(48px * var(--card-scale));
+  font-size: calc(var(--card-size) * 0.24);
   font-weight: 800;
   color: #E53935;
-  width: calc(60px * var(--card-scale));
-  height: calc(60px * var(--card-scale));
+  width: calc(var(--card-size) * 0.35);
+  height: calc(var(--card-size) * 0.35);
   flex-shrink: 0;
   font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
 }
 
-/* 等式行 */
+/* 等式行 — 不换行 */
 .equation-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: calc(14px * var(--card-scale));
-  padding: 20px;
-  flex-wrap: wrap;
+  gap: calc(var(--card-size) * 0.08);
+  padding: 5vw;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* SVG 点卡 */
 .dot-card-svg {
-  border-radius: 12px;
+  border-radius: calc(var(--card-size) * 0.06);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.dot-card-svg-small {
-  width: calc(100px * var(--card-scale));
-  height: calc(100px * var(--card-scale));
-}
-
-.dot-card-svg-medium {
-  width: calc(150px * var(--card-scale));
-  height: calc(150px * var(--card-scale));
-}
-
+.dot-card-svg-small,
+.dot-card-svg-medium,
 .dot-card-svg-large {
-  width: calc(200px * var(--card-scale));
-  height: calc(200px * var(--card-scale));
+  width: var(--card-size);
+  height: var(--card-size);
 }
