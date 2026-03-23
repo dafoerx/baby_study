@@ -219,6 +219,31 @@
   // ==================== 闪卡播放页 ====================
 
   /**
+   * 请求浏览器全屏
+   */
+  function requestBrowserFullscreen() {
+    const el = document.documentElement;
+    const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+    if (request) {
+      request.call(el).catch(err => {
+        console.warn('无法进入全屏模式:', err);
+      });
+    }
+  }
+
+  /**
+   * 退出浏览器全屏
+   */
+  function exitBrowserFullscreen() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+      if (exit) {
+        exit.call(document).catch(() => {});
+      }
+    }
+  }
+
+  /**
    * 进入全屏播放模式
    */
   function enterFullscreenMode() {
@@ -237,6 +262,7 @@
     document.body.classList.remove('flash-fullscreen');
     document.getElementById('main-nav').style.display = '';
     removeOverlay();
+    exitBrowserFullscreen();
   }
 
   /**
@@ -345,6 +371,7 @@
       removeOverlay();
       exitFullscreenMode();
       if (state.currentSession) {
+        requestBrowserFullscreen();
         startFlash(state.currentSession);
       }
     });
@@ -504,8 +531,9 @@
       }
     });
 
-    // 闪卡控制
+    // 闪卡控制 —— 点击开始后进入浏览器全屏
     document.getElementById('btn-flash-play').addEventListener('click', () => {
+      requestBrowserFullscreen();
       state.player.play();
     });
 
@@ -514,6 +542,7 @@
     });
 
     document.getElementById('btn-flash-resume').addEventListener('click', () => {
+      requestBrowserFullscreen();
       state.player.resume();
     });
 
@@ -589,6 +618,21 @@
         document.getElementById('settings-modal').classList.add('hidden');
       }
     });
+
+    // 监听浏览器全屏状态变化（用户按ESC退出全屏时同步暂停播放）
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+  }
+
+  /**
+   * 处理浏览器全屏状态变化
+   */
+  function handleFullscreenChange() {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    if (!isFullscreen && state.player.isPlaying && !state.player.isPaused) {
+      // 用户通过ESC退出了浏览器全屏，暂停播放
+      state.player.pause();
+    }
   }
 
   // ==================== 初始化 ====================
