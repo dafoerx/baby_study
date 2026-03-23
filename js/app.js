@@ -2,6 +2,81 @@
  * 主应用逻辑
  */
 (function () {
+  // ==================== 持久化设置 ====================
+  const SETTINGS_KEY = 'baby_study_settings';
+
+  /**
+   * 默认设置
+   */
+  const DEFAULT_SETTINGS = {
+    speed: 0.5,
+    intervalMinutes: 15,
+    autoPlay: true,
+    cardScale: 1.0,
+  };
+
+  /**
+   * 从 localStorage 加载设置
+   */
+  function loadSettings() {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...DEFAULT_SETTINGS, ...parsed };
+      }
+    } catch (e) {
+      console.warn('加载设置失败，使用默认值', e);
+    }
+    return { ...DEFAULT_SETTINGS };
+  }
+
+  /**
+   * 保存设置到 localStorage
+   */
+  function saveSettings() {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+    } catch (e) {
+      console.warn('保存设置失败', e);
+    }
+  }
+
+  /**
+   * 更新设置并同步到所有 UI
+   */
+  function applySettings() {
+    // 同步到闪卡页的速度选择框
+    const flashSpeedEl = document.getElementById('flash-speed');
+    if (flashSpeedEl) flashSpeedEl.value = state.settings.speed;
+
+    // 同步到闪卡页的大小选择框
+    const flashScaleEl = document.getElementById('flash-card-scale');
+    if (flashScaleEl) flashScaleEl.value = state.settings.cardScale;
+
+    // 同步到设置弹窗
+    const settingSpeedEl = document.getElementById('setting-speed');
+    if (settingSpeedEl) settingSpeedEl.value = state.settings.speed;
+
+    const settingScaleEl = document.getElementById('setting-card-scale');
+    if (settingScaleEl) settingScaleEl.value = state.settings.cardScale;
+
+    const settingIntervalEl = document.getElementById('setting-interval');
+    if (settingIntervalEl) settingIntervalEl.value = state.settings.intervalMinutes;
+
+    const settingAutoplayEl = document.getElementById('setting-autoplay');
+    if (settingAutoplayEl) settingAutoplayEl.checked = state.settings.autoPlay;
+
+    // 应用 CSS 变量
+    document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+
+    // 同步到播放器
+    state.player.setSpeed(state.settings.speed);
+
+    // 持久化
+    saveSettings();
+  }
+
   // ==================== 状态管理 ====================
   const state = {
     currentPage: 'catalog',
@@ -9,12 +84,7 @@
     currentDay: null,
     currentSession: null,
     player: new FlashPlayer(),
-    settings: {
-      speed: 0.5,
-      intervalMinutes: 15,
-      autoPlay: true,
-      cardScale: 1.0,
-    }
+    settings: loadSettings(),
   };
 
   // ==================== 页面路由 ====================
@@ -147,22 +217,175 @@
   }
 
   // ==================== 闪卡播放页 ====================
+
+  /**
+   * 进入全屏播放模式
+   */
+  function enterFullscreenMode() {
+    const flashPage = document.getElementById('page-flash');
+    flashPage.classList.add('fullscreen-playing');
+    document.body.classList.add('flash-fullscreen');
+    document.getElementById('main-nav').style.display = 'none';
+  }
+
+  /**
+   * 退出全屏播放模式
+   */
+  function exitFullscreenMode() {
+    const flashPage = document.getElementById('page-flash');
+    flashPage.classList.remove('fullscreen-playing');
+    document.body.classList.remove('flash-fullscreen');
+    document.getElementById('main-nav').style.display = '';
+    removeOverlay();
+  }
+
+  /**
+   * 移除覆盖层
+   */
+  function removeOverlay() {
+    const existing = document.querySelector('.flash-overlay-controls');
+    if (existing) existing.remove();
+  }
+
+  /**
+   * 显示组完成的覆盖层
+   */
+  function showGroupCompleteOverlay(data) {
+    removeOverlay();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'flash-overlay-controls';
+    overlay.innerHTML = `
+      <div class="overlay-title">✅ 第${data.currentGroup + 1}组 完成</div>
+      <div class="overlay-subtitle">还剩 ${data.totalGroups - data.currentGroup - 1} 组</div>
+      <div class="overlay-buttons">
+        <button class="btn-overlay btn-overlay-primary" id="overlay-next-group">下一组 →</button>
+        <button class="btn-overlay btn-overlay-secondary" id="overlay-back">返回</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#overlay-next-group').addEventListener('click', () => {
+      removeOverlay();
+      state.player.nextGroup();
+    });
+    overlay.querySelector('#overlay-back').addEventListener('click', () => {
+      removeOverlay();
+      exitFullscreenMode();
+      state.player.stop();
+      if (state.currentDay) {
+        const chapterData = getChapterData(state.currentChapter.id);
+        if (chapterData) {
+          openDay(chapterData, state.currentDay);
+        }
+      }
+    });
+  }
+
+  /**
+   * 显示倒计时覆盖层
+   */
+  function showCountdownOverlay(remaining, data) {
+    let overlay = document.querySelector('.flash-overlay-controls');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'flash-overlay-controls';
+      overlay.innerHTML = `
+        <div class="overlay-title">✅ 第${data.currentGroup + 1}组 完成</div>
+        <div class="overlay-subtitle" id="overlay-countdown-text">下一组倒计时：${formatTime(remaining)}</div>
+        <div class="overlay-buttons">
+          <button class="btn-overlay btn-overlay-primary" id="overlay-next-group">立即下一组 →</button>
+          <button class="btn-overlay btn-overlay-secondary" id="overlay-back">返回</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.querySelector('#overlay-next-group').addEventListener('click', () => {
+        removeOverlay();
+        state.player.nextGroup();
+      });
+      overlay.querySelector('#overlay-back').addEventListener('click', () => {
+        removeOverlay();
+        exitFullscreenMode();
+        state.player.stop();
+        if (state.currentDay) {
+          const chapterData = getChapterData(state.currentChapter.id);
+          if (chapterData) {
+            openDay(chapterData, state.currentDay);
+          }
+        }
+      });
+    } else {
+      const countdownText = overlay.querySelector('#overlay-countdown-text');
+      if (countdownText) {
+        countdownText.textContent = `下一组倒计时：${formatTime(remaining)}`;
+      }
+    }
+  }
+
+  /**
+   * 显示全部完成的覆盖层
+   */
+  function showSessionCompleteOverlay() {
+    removeOverlay();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'flash-overlay-controls';
+    overlay.innerHTML = `
+      <div class="overlay-title">🎉 本次练习完成！</div>
+      <div class="overlay-subtitle">太棒了，宝宝真厉害！</div>
+      <div class="overlay-buttons">
+        <button class="btn-overlay btn-overlay-primary" id="overlay-restart">重新开始</button>
+        <button class="btn-overlay btn-overlay-secondary" id="overlay-back">返回</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#overlay-restart').addEventListener('click', () => {
+      removeOverlay();
+      exitFullscreenMode();
+      if (state.currentSession) {
+        startFlash(state.currentSession);
+      }
+    });
+    overlay.querySelector('#overlay-back').addEventListener('click', () => {
+      removeOverlay();
+      exitFullscreenMode();
+      state.player.stop();
+      if (state.currentDay) {
+        const chapterData = getChapterData(state.currentChapter.id);
+        if (chapterData) {
+          openDay(chapterData, state.currentDay);
+        }
+      }
+    });
+  }
+
+  /**
+   * 格式化时间
+   */
+  function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec.toString().padStart(2, '0')}`;
+  }
+
   function startFlash(session) {
     state.currentSession = session;
     const player = state.player;
 
-    // 配置播放器
+    // 配置播放器（使用全局持久化的设置）
     player.setSpeed(state.settings.speed);
     player.intervalMinutes = state.settings.intervalMinutes;
     player.autoPlay = state.settings.autoPlay;
     player.loadSession(session, session.groups);
 
-    // 更新UI
+    // 更新UI信息
     document.getElementById('flash-session-info').textContent = `第${session.session}次`;
     document.getElementById('flash-group-info').textContent = `第1/${session.groups.length}组`;
-    document.getElementById('flash-speed').value = state.settings.speed;
-    document.getElementById('flash-card-scale').value = state.settings.cardScale;
-    document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+
+    // 同步所有设置到UI
+    applySettings();
 
     // 重置控制按钮
     resetFlashControls();
@@ -170,6 +393,9 @@
 
     // 清空舞台
     document.getElementById('equation-display').innerHTML = '';
+
+    // 确保退出全屏模式
+    exitFullscreenMode();
 
     // 设置状态回调
     player.onStateChange = handleFlashState;
@@ -183,32 +409,40 @@
 
     switch (stateType) {
       case 'playing':
+        // 进入全屏模式，隐藏所有UI
+        enterFullscreenMode();
+        removeOverlay();
         resetFlashControls();
-        showFlashControl('btn-flash-pause');
         break;
 
       case 'paused':
+        // 暂停时退出全屏，显示控制
+        exitFullscreenMode();
         resetFlashControls();
         showFlashControl('btn-flash-resume');
         break;
 
       case 'group-start':
+        // 新组开始，确保全屏
+        enterFullscreenMode();
+        removeOverlay();
         document.getElementById('equation-display').innerHTML = '';
         break;
 
       case 'group-complete':
-        resetFlashControls();
-        showFlashControl('btn-flash-next-group');
+        // 一组完成，显示覆盖层按钮
+        showGroupCompleteOverlay(data);
         break;
 
       case 'countdown-start':
       case 'countdown-tick':
-        showFlashTimer(data.remaining);
+        // 倒计时显示在覆盖层
+        showCountdownOverlay(data.remaining, data);
         break;
 
       case 'session-complete':
-        resetFlashControls();
-        document.getElementById('flash-complete').classList.remove('hidden');
+        // 全部完成，显示完成覆盖层
+        showSessionCompleteOverlay();
         break;
     }
   }
@@ -261,6 +495,7 @@
 
     document.getElementById('btn-back-day').addEventListener('click', () => {
       state.player.stop();
+      exitFullscreenMode();
       if (state.currentDay) {
         const chapterData = getChapterData(state.currentChapter.id);
         if (chapterData) {
@@ -287,34 +522,65 @@
     });
 
     document.getElementById('btn-flash-restart').addEventListener('click', () => {
+      exitFullscreenMode();
       if (state.currentSession) {
         startFlash(state.currentSession);
       }
     });
 
-    // 速度调节
-    document.getElementById('flash-speed').addEventListener('change', (e) => {
-      state.settings.speed = parseFloat(e.target.value);
-      state.player.setSpeed(state.settings.speed);
+    // 点击舞台区域暂停/继续闪卡
+    document.getElementById('flash-stage').addEventListener('click', () => {
+      const player = state.player;
+      if (player.isPlaying && !player.isPaused) {
+        player.pause();
+      }
     });
 
-    // 卡片大小调节
+    // 速度调节（闪卡页）—— 全局生效
+    document.getElementById('flash-speed').addEventListener('change', (e) => {
+      state.settings.speed = parseFloat(e.target.value);
+      applySettings();
+    });
+
+    // 卡片大小调节（闪卡页）—— 全局生效
     document.getElementById('flash-card-scale').addEventListener('change', (e) => {
       state.settings.cardScale = parseFloat(e.target.value);
-      document.documentElement.style.setProperty('--card-scale', state.settings.cardScale);
+      applySettings();
     });
 
     // 设置弹窗
     document.getElementById('btn-settings').addEventListener('click', () => {
+      // 打开弹窗时同步当前设置到弹窗UI
+      applySettings();
       document.getElementById('settings-modal').classList.remove('hidden');
     });
 
     document.getElementById('btn-close-settings').addEventListener('click', () => {
       document.getElementById('settings-modal').classList.add('hidden');
-      // 保存设置
-      state.settings.speed = parseFloat(document.getElementById('setting-speed').value);
-      state.settings.intervalMinutes = parseInt(document.getElementById('setting-interval').value);
-      state.settings.autoPlay = document.getElementById('setting-autoplay').checked;
+    });
+
+    // 设置弹窗中的速度 —— 修改即生效
+    document.getElementById('setting-speed').addEventListener('change', (e) => {
+      state.settings.speed = parseFloat(e.target.value);
+      applySettings();
+    });
+
+    // 设置弹窗中的卡片大小 —— 修改即生效
+    document.getElementById('setting-card-scale').addEventListener('change', (e) => {
+      state.settings.cardScale = parseFloat(e.target.value);
+      applySettings();
+    });
+
+    // 设置弹窗中的组间间隔 —— 修改即生效
+    document.getElementById('setting-interval').addEventListener('change', (e) => {
+      state.settings.intervalMinutes = parseInt(e.target.value);
+      applySettings();
+    });
+
+    // 设置弹窗中的自动播放 —— 修改即生效
+    document.getElementById('setting-autoplay').addEventListener('change', (e) => {
+      state.settings.autoPlay = e.target.checked;
+      applySettings();
     });
 
     // 点击弹窗外部关闭
@@ -329,6 +595,10 @@
   function init() {
     renderCatalog();
     bindEvents();
+
+    // 启动时应用持久化的设置到所有UI
+    applySettings();
+
     showPage('catalog');
   }
 

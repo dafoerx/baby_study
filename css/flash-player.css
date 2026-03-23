@@ -199,6 +199,149 @@
   display: none !important;
 }
 
+/* ========== 全屏闪卡模式 ========== */
+
+/* 播放中：闪卡页全屏覆盖 */
+#page-flash.fullscreen-playing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  padding: 0;
+  margin: 0;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 播放中隐藏导航栏 */
+#page-flash.fullscreen-playing ~ .main-nav,
+body.flash-fullscreen .main-nav {
+  display: none !important;
+}
+
+/* 播放中隐藏顶部控制和底部按钮 */
+#page-flash.fullscreen-playing .flash-ui-control {
+  display: none !important;
+}
+
+/* 播放中舞台区域全屏居中 */
+#page-flash.fullscreen-playing .flash-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-flash.fullscreen-playing .flash-stage::before {
+  display: none;
+}
+
+/* 全屏模式下等式显示区域 */
+#page-flash.fullscreen-playing .equation-display {
+  transform: scale(1.3);
+}
+
+/* 点击闪卡区域可暂停（视觉提示） */
+#page-flash.fullscreen-playing .flash-stage {
+  cursor: pointer;
+}
+
+/* ========== 组完成/全部完成的弹出覆盖层 ========== */
+.flash-overlay-controls {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.flash-overlay-controls .overlay-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.flash-overlay-controls .overlay-subtitle {
+  font-size: 16px;
+  color: var(--text-light);
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.flash-overlay-controls .overlay-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.flash-overlay-controls .btn-overlay {
+  padding: 16px 48px;
+  border-radius: 50px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  letter-spacing: 1px;
+}
+
+.flash-overlay-controls .btn-overlay-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  box-shadow: 0 4px 20px rgba(229, 57, 53, 0.4);
+}
+
+.flash-overlay-controls .btn-overlay-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 28px rgba(229, 57, 53, 0.5);
+}
+
+.flash-overlay-controls .btn-overlay-secondary {
+  background: var(--bg-card);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.flash-overlay-controls .btn-overlay-secondary:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
 /* ========== 响应式 ========== */
 @media (max-width: 768px) {
   .flash-header {
@@ -225,5 +368,19 @@
   .flash-timer {
     flex-direction: column;
     text-align: center;
+  }
+
+  #page-flash.fullscreen-playing .equation-display {
+    transform: scale(1.1);
+  }
+
+  .flash-overlay-controls .btn-overlay {
+    padding: 14px 36px;
+    font-size: 18px;
+    width: 80%;
+  }
+
+  .flash-overlay-controls .overlay-title {
+    font-size: 24px;
   }
 }

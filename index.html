@@ -52,7 +52,8 @@
 
     <!-- 闪卡播放页 -->
     <section id="page-flash" class="page">
-      <div class="flash-header">
+      <!-- 顶部控制栏（播放时隐藏） -->
+      <div class="flash-header flash-ui-control">
         <button id="btn-back-day" class="btn-back">← 返回</button>
         <div class="flash-info">
           <span id="flash-session-info"></span>
@@ -84,13 +85,13 @@
         </div>
       </div>
 
-      <!-- 等式展示区 -->
+      <!-- 等式展示区（全屏模式下占满屏幕） -->
       <div id="flash-stage" class="flash-stage">
         <div id="equation-display" class="equation-display"></div>
       </div>
 
-      <!-- 播放控制 -->
-      <div class="flash-controls-bottom">
+      <!-- 播放控制（播放时隐藏，组完成/全部完成时显示） -->
+      <div class="flash-controls-bottom flash-ui-control">
         <button id="btn-flash-play" class="btn-play">▶ 开始闪卡</button>
         <button id="btn-flash-pause" class="btn-control hidden">⏸ 暂停</button>
         <button id="btn-flash-resume" class="btn-control hidden">▶ 继续</button>
@@ -116,7 +117,7 @@
         </div>
         <div class="modal-body">
           <div class="setting-item">
-            <label>默认闪卡速度</label>
+            <label>闪卡速度</label>
             <select id="setting-speed">
               <option value="0.3">0.3秒</option>
               <option value="0.5" selected>0.5秒</option>
@@ -124,6 +125,17 @@
               <option value="1.0">1.0秒</option>
               <option value="1.5">1.5秒</option>
               <option value="2.0">2.0秒</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label>卡片大小</label>
+            <select id="setting-card-scale">
+              <option value="0.6">小</option>
+              <option value="0.8">较小</option>
+              <option value="1.0" selected>中</option>
+              <option value="1.2">较大</option>
+              <option value="1.5">大</option>
+              <option value="1.8">很大</option>
             </select>
           </div>
           <div class="setting-item">
